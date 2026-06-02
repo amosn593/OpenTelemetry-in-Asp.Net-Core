@@ -1,18 +1,10 @@
 global:
-  scrape_interval: 2s
+  scrape_interval: 5s
 scrape_configs:
-  - job_name: "SAHAL-Wallet"
+  - job_name: "Local Dev"
     scheme: http # Use HTTPS
     metrics_path: "/metrics"
     static_configs:
-      - targets: ["host.docker.internal:5020"] # Replace with your target URL
-    tls_config:
-      insecure_skip_verify: true # Skips SSL cert verification (use with caution!)
-
-  - job_name: "Local Dev"
-    scheme: https # Use HTTPS
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["host.docker.internal:7035"]
+      - targets: ["host.docker.internal:5021"] # Replace with your target URL
     tls_config:
       insecure_skip_verify: true # Skips SSL cert verification (use with caution!)
