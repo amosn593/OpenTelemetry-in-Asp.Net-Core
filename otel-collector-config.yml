@@ -2,28 +2,50 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
 
 exporters:
-  logging:
-    loglevel: debug
-  jaeger:
-    endpoint: "jaeger:14250"
+  # 1. SEQ (HTTP OTLP for Logs and Traces)
+  otlphttp/seq:
+    endpoint: "http://seq:5341/ingest/otlp"
     tls:
       insecure: true
+    # If Seq has API keys enabled, add headers:
+    # headers:
+    #   X-Seq-ApiKey: "YOUR_API_KEY"
+
+  # 2. JAEGER (OTLP gRPC)
+  otlp/jaeger:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
+
+  # 3. PROMETHEUS (Exposes a pull endpoint for Prometheus)
   prometheus:
     endpoint: "0.0.0.0:8889"
-  otlphttp:
-    endpoint: "http://seq:5341/ingest/otlp"
+
+  # Optional console debug output
+  debug:
+    verbosity: basic
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [jaeger, logging]
-    metrics:
-      receivers: [otlp]
-      exporters: [prometheus, logging]
+      processors: [batch]
+      exporters: [otlp/jaeger, otlphttp/seq, debug]
+
     logs:
       receivers: [otlp]
-      exporters: [logging]
+      processors: [batch]
+      exporters: [otlphttp/seq, debug]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus, debug]

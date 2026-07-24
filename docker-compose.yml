@@ -1,4 +1,21 @@
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command:
+      - "--config=/etc/otelcol/config.yaml"
+
+    volumes:
+      - ./otel-collector-config.yml:/etc/otelcol/config.yaml
+
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
+
+    networks:
+      - telemetry-net
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -15,6 +32,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     ports:
       - "3000:3000"
     networks:
@@ -31,21 +49,26 @@ services:
       - GF_SMTP_SKIP_VERIFY=true
     depends_on:
       - prometheus
-    volumes:
-      - grafana_data:/var/lib/grafana
+    # volumes:
+    #   - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
+
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
     ports:
       - "16686:16686"
-      - "4317:4317"
+
     networks:
       - telemetry-net
 
   seq:
     image: datalust/seq:latest
+    container_name: seq
     ports:
       - "5342:80"
       - "5341:5341"
@@ -54,18 +77,25 @@ services:
       - SEQ_FIRSTRUN_ADMINPASSWORD=Admin@123456
     networks:
       - telemetry-net
-    volumes:
-      - seq_data:/data
+    # volumes:
+    #   - seq_data:/data
     restart: unless-stopped
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
 
 networks:
   telemetry-net:
     driver: bridge
 
-volumes:
-  prometheus_data:
-    driver: local
-  grafana_data:
-    driver: local
-  seq_data:
-    driver: local
+# volumes:
+#   prometheus_data:
+#     driver: local
+#   grafana_data:
+#     driver: local
+#   seq_data:
+#     driver: local
