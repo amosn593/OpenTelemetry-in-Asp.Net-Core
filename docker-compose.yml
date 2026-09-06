@@ -23,7 +23,7 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      #- prometheus_data:/prometheus
+      - prometheus_data:/prometheus
     networks:
       - telemetry-net
     restart: unless-stopped
@@ -49,8 +49,8 @@ services:
       - GF_SMTP_SKIP_VERIFY=true
     depends_on:
       - prometheus
-    # volumes:
-    #   - grafana_data:/var/lib/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
   jaeger:
@@ -77,10 +77,23 @@ services:
       - SEQ_FIRSTRUN_ADMINPASSWORD=Admin@123456
     networks:
       - telemetry-net
-    # volumes:
-    #   - seq_data:/data
+    volumes:
+      - seq_data:/data
     restart: unless-stopped
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001" # This maps the container port "3001" to the host port "3001"
+    volumes:
+      - uptime-kuma_data:/app/data # Configuring persistent storage
+    environment:
+      - TZ=UTC # Set the timezone (change to your preferred local timezone so
+    networks:
+      - telemetry-net
+      
   # redis:
   #   image: redis:7-alpine
   #   container_name: redis
@@ -92,10 +105,12 @@ networks:
   telemetry-net:
     driver: bridge
 
-# volumes:
-#   prometheus_data:
-#     driver: local
-#   grafana_data:
-#     driver: local
-#   seq_data:
-#     driver: local
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  seq_data:
+    driver: local
+  uptime-kuma_data:
+    driver: local
