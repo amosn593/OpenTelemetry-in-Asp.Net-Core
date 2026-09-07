@@ -29,6 +29,11 @@ exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
 
+    # Convert OTel resource attributes such as
+    # service.name into Prometheus labels.
+    resource_to_telemetry_conversion:
+      enabled: true
+
   # Optional console debug output
   debug:
     verbosity: basic
