@@ -38,14 +38,14 @@ services:
     networks:
       - telemetry-net
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SMTP_ENABLED=true
-      - GF_SMTP_HOST=smtp.gmail.com:587
-      - GF_SMTP_USER=amoc593@gmail.com
-      - GF_SMTP_PASSWORD=gqwsogjbhgaetvag
-      - GF_SMTP_FROM_ADDRESS=amoc593@gmail.com
-      - GF_SMTP_FROM_NAME=Grafana_Monitoring
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SMTP_ENABLED=${GF_SMTP_ENABLED}
+      - GF_SMTP_HOST=${GF_SMTP_HOST}
+      - GF_SMTP_USER=${GF_SMTP_USER}
+      - GF_SMTP_PASSWORD=${GF_SMTP_PASSWORD}
+      - GF_SMTP_FROM_ADDRESS=${GF_SMTP_FROM_ADDRESS}
+      - GF_SMTP_FROM_NAME=Kenya Power Pension Fund BVS Grafana_Monitoring
       - GF_SMTP_SKIP_VERIFY=true
     depends_on:
       - prometheus
@@ -74,7 +74,7 @@ services:
       - "5341:5341"
     environment:
       - ACCEPT_EULA=Y
-      - SEQ_FIRSTRUN_ADMINPASSWORD=Admin@123456
+      - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_FIRSTRUN_ADMINPASSWORD}
     networks:
       - telemetry-net
     volumes:
@@ -93,7 +93,7 @@ services:
       - TZ=UTC # Set the timezone (change to your preferred local timezone so
     networks:
       - telemetry-net
-      
+
   # redis:
   #   image: redis:7-alpine
   #   container_name: redis
