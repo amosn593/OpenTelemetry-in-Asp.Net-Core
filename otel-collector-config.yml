@@ -43,14 +43,14 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/jaeger, otlphttp/seq, debug]
+      exporters: [otlp/jaeger, otlphttp/seq]
 
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp/seq, debug]
+      exporters: [otlphttp/seq]
 
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [prometheus, debug]
+      exporters: [prometheus]
